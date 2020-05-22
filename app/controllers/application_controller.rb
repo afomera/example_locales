@@ -3,11 +3,20 @@ class ApplicationController < ActionController::Base
 
   before_action :configure_permitted_parameters, if: :devise_controller?
   before_action :masquerade_user!
+  before_action :set_language
 
   protected
 
+  def set_language
+    if current_user.present?
+      user_locale = current_user.language || :en
+    end
+
+    I18n.locale = user_locale || :en
+  end
+
     def configure_permitted_parameters
       devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
-      devise_parameter_sanitizer.permit(:account_update, keys: [:name])
+      devise_parameter_sanitizer.permit(:account_update, keys: [:name,  :language])
     end
 end
